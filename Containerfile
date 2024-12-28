@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     python3.10 \
     python3.10-dev \
     python3-pip \
+    python3-psutil \
     libpython3.10 \
     virtualenv \
     openjdk-11-jdk-headless \
@@ -37,11 +38,9 @@ RUN apt-get update && apt-get install -y \
     klayout
 
 RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt-get update && apt-get install -y \
-    python3.9 \
-    python3.9-dev \
-    python3-pip \
-    libpython3.9
+RUN apt-get update
+
+RUN pip install pyyaml
 
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
@@ -63,8 +62,8 @@ RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHY
 # OSS Cad Suite
 
 ARG OSS_CAD_SUITE_YEAR=2024
-ARG OSS_CAD_SUITE_MONTH=07
-ARG OSS_CAD_SUITE_DAY=17
+ARG OSS_CAD_SUITE_MONTH=11
+ARG OSS_CAD_SUITE_DAY=22
 ARG OSS_CAD_SUITE_DATE="${OSS_CAD_SUITE_YEAR}-${OSS_CAD_SUITE_MONTH}-${OSS_CAD_SUITE_DAY}"
 ARG OSS_CAD_SUITE_STAMP="${OSS_CAD_SUITE_YEAR}${OSS_CAD_SUITE_MONTH}${OSS_CAD_SUITE_DAY}"
 
@@ -77,8 +76,8 @@ RUN wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_
 # OpenROAD, KLayout, OpenROAD flow scripts
 
 ARG OPENROAD_YEAR=2024
-ARG OPENROAD_MONTH=07
-ARG OPENROAD_DAY=17
+ARG OPENROAD_MONTH=08
+ARG OPENROAD_DAY=05
 ARG OPENROAD_VERSION="${OPENROAD_YEAR}-${OPENROAD_MONTH}-${OPENROAD_DAY}"
 ARG KLAYOUT_VERSION=0.29.0
 ARG OPENROAD_FLOW_ORGA=The-OpenROAD-Project
@@ -102,7 +101,7 @@ RUN git clone --progress https://github.com/${OPENROAD_FLOW_ORGA}/OpenROAD-flow-
 
 # IHP Open PDK
 
-ARG IHP_PDK_VERSION=5a42d03194e8c98558f4e34538338a60550f89b9
+ARG IHP_PDK_VERSION=4c6508d03a3078b21c737d04fae5dccec9aa590f
 
 WORKDIR /opt/elements/pdks
 
