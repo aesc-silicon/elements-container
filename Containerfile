@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y sbt
 
 # Zephyr SDK
 
-ARG ZEPHYR_SDK_RELEASE=0.16.5
+ARG ZEPHYR_SDK_RELEASE=0.17.0
 
 WORKDIR /opt/elements/
 
@@ -61,9 +61,9 @@ RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHY
 
 # OSS Cad Suite
 
-ARG OSS_CAD_SUITE_YEAR=2024
-ARG OSS_CAD_SUITE_MONTH=11
-ARG OSS_CAD_SUITE_DAY=22
+ARG OSS_CAD_SUITE_YEAR=2025
+ARG OSS_CAD_SUITE_MONTH=01
+ARG OSS_CAD_SUITE_DAY=29
 ARG OSS_CAD_SUITE_DATE="${OSS_CAD_SUITE_YEAR}-${OSS_CAD_SUITE_MONTH}-${OSS_CAD_SUITE_DAY}"
 ARG OSS_CAD_SUITE_STAMP="${OSS_CAD_SUITE_YEAR}${OSS_CAD_SUITE_MONTH}${OSS_CAD_SUITE_DAY}"
 
@@ -73,21 +73,13 @@ RUN wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_
     tar -xvf oss-cad-suite-linux-x64-${OSS_CAD_SUITE_STAMP}.tgz && \
     rm oss-cad-suite-linux-x64-${OSS_CAD_SUITE_STAMP}.tgz
 
-# OpenROAD, KLayout, OpenROAD flow scripts
+# KLayout, OpenROAD flow scripts
 
-ARG OPENROAD_YEAR=2024
-ARG OPENROAD_MONTH=08
-ARG OPENROAD_DAY=05
-ARG OPENROAD_VERSION="${OPENROAD_YEAR}-${OPENROAD_MONTH}-${OPENROAD_DAY}"
 ARG KLAYOUT_VERSION=0.29.0
 ARG OPENROAD_FLOW_ORGA=The-OpenROAD-Project
-ARG OPENROAD_FLOW_COMMIT=d617deb35b6823c03846bacfefbd838f49cff437
+ARG OPENROAD_FLOW_COMMIT=97497e0a6c7069703d0bfa6df52f3d4f7ec1e701
 
 WORKDIR /opt/elements/
-
-RUN wget https://github.com/Precision-Innovations/OpenROAD/releases/download/${OPENROAD_VERSION}/openroad_2.0_amd64-ubuntu20.04-${OPENROAD_VERSION}.deb && \
-    sudo apt install -y ./openroad_2.0_amd64-ubuntu20.04-${OPENROAD_VERSION}.deb && \
-    rm openroad_2.0_amd64-ubuntu20.04-${OPENROAD_VERSION}.deb
 
 RUN wget https://www.klayout.org/downloads/Ubuntu-22/klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
     sudo apt install -y ./klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
@@ -95,9 +87,16 @@ RUN wget https://www.klayout.org/downloads/Ubuntu-22/klayout_${KLAYOUT_VERSION}-
 
 WORKDIR /opt/elements/tools
 
-RUN git clone --progress https://github.com/${OPENROAD_FLOW_ORGA}/OpenROAD-flow-scripts.git && \
+RUN git clone --progress --recursive https://github.com/${OPENROAD_FLOW_ORGA}/OpenROAD-flow-scripts.git && \
     cd OpenROAD-flow-scripts && \
-    git checkout ${OPENROAD_FLOW_COMMIT}
+    git checkout ${OPENROAD_FLOW_COMMIT} && \
+    git submodule init && \
+    git submodule update --recursive
+
+WORKDIR /opt/elements/tools/OpenROAD-flow-scripts/
+
+RUN ./tools/OpenROAD/etc/DependencyInstaller.sh
+RUN ./build_openroad.sh --threads 16
 
 # IHP Open PDK
 
