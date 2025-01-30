@@ -54,10 +54,17 @@ ARG ZEPHYR_SDK_RELEASE=0.17.0
 
 WORKDIR /opt/elements/
 
-RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/zephyr-sdk-${ZEPHYR_SDK_RELEASE}_linux-x86_64.tar.xz && \
+RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/zephyr-sdk-${ZEPHYR_SDK_RELEASE}_linux-x86_64_minimal.tar.xz && \
     wget -O - https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/sha256.sum | shasum --check --ignore-missing && \
-    tar xvf zephyr-sdk-${ZEPHYR_SDK_RELEASE}_linux-x86_64.tar.xz && \
-    rm zephyr-sdk-${ZEPHYR_SDK_RELEASE}_linux-x86_64.tar.xz
+    tar xvf zephyr-sdk-${ZEPHYR_SDK_RELEASE}_linux-x86_64_minimal.tar.xz && \
+    rm zephyr-sdk-${ZEPHYR_SDK_RELEASE}_linux-x86_64_minimal.tar.xz
+
+WORKDIR /opt/elements/zephyr-sdk-${ZEPHYR_SDK_RELEASE}
+
+RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz && \
+    wget -O - https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/sha256.sum | shasum --check --ignore-missing && \
+    tar xvf toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz && \
+    rm toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz
 
 # OSS Cad Suite
 
@@ -96,7 +103,8 @@ RUN git clone --progress --recursive https://github.com/${OPENROAD_FLOW_ORGA}/Op
 WORKDIR /opt/elements/tools/OpenROAD-flow-scripts/
 
 RUN ./tools/OpenROAD/etc/DependencyInstaller.sh
-RUN ./build_openroad.sh --threads 16
+RUN ./build_openroad.sh --threads 16 --install-path /opt/elements/tools/
+RUN rm -rf ./tools/OpenROAD && rm -rf ./tools/yosys && rm -rf .git
 
 # IHP Open PDK
 
