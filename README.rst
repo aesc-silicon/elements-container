@@ -6,9 +6,8 @@ Container with all requirements installed as environment for the Elements SDK.
 Build
 #####
 
-Run following code to build the `elements:v1.1` container with podman.
+Run following code to build the `elements:v1.2` container with podman.
 
 .. code-block:: bash
 
-    podman build -t elements:v1.1 .
-
+    podman build -t elements:v1.2 .
