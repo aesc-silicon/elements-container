@@ -35,7 +35,15 @@ RUN apt-get update && apt-get install -y \
     libcanberra-gtk3-module \
     libtinfo5 \
     libncurses5 \
-    klayout
+    ngspice \
+    libx11-dev \
+    libxrender-dev \
+    libx11-xcb-dev \
+    libcairo2-dev \
+    tcl8.6-dev \
+    tk8.6-dev \
+    libxpm-dev \
+    libjpeg-dev
 
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update
@@ -69,8 +77,8 @@ RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHY
 # OSS Cad Suite
 
 ARG OSS_CAD_SUITE_YEAR=2025
-ARG OSS_CAD_SUITE_MONTH=01
-ARG OSS_CAD_SUITE_DAY=29
+ARG OSS_CAD_SUITE_MONTH=06
+ARG OSS_CAD_SUITE_DAY=17
 ARG OSS_CAD_SUITE_DATE="${OSS_CAD_SUITE_YEAR}-${OSS_CAD_SUITE_MONTH}-${OSS_CAD_SUITE_DAY}"
 ARG OSS_CAD_SUITE_STAMP="${OSS_CAD_SUITE_YEAR}${OSS_CAD_SUITE_MONTH}${OSS_CAD_SUITE_DAY}"
 
@@ -80,11 +88,12 @@ RUN wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_
     tar -xvf oss-cad-suite-linux-x64-${OSS_CAD_SUITE_STAMP}.tgz && \
     rm oss-cad-suite-linux-x64-${OSS_CAD_SUITE_STAMP}.tgz
 
-# KLayout, OpenROAD flow scripts
+# KLayout, OpenROAD flow scripts, xschem
 
-ARG KLAYOUT_VERSION=0.29.0
+ARG KLAYOUT_VERSION=0.29.12
 ARG OPENROAD_FLOW_ORGA=The-OpenROAD-Project
-ARG OPENROAD_FLOW_COMMIT=97497e0a6c7069703d0bfa6df52f3d4f7ec1e701
+ARG OPENROAD_FLOW_COMMIT=7994405e8441ee3ca60cb107d1f26dd3e111a637
+ARG XSCHEM_RELEASE=3.4.6
 
 WORKDIR /opt/elements/
 
@@ -102,18 +111,29 @@ RUN git clone --progress --recursive https://github.com/${OPENROAD_FLOW_ORGA}/Op
 
 WORKDIR /opt/elements/tools/OpenROAD-flow-scripts/
 
-RUN ./tools/OpenROAD/etc/DependencyInstaller.sh
+RUN ./tools/OpenROAD/etc/DependencyInstaller.sh -all
 RUN ./build_openroad.sh --threads 16 --install-path /opt/elements/tools/
 RUN rm -rf ./tools/OpenROAD && rm -rf ./tools/yosys && rm -rf .git
 
+WORKDIR /opt/elements/tools/
+
+RUN git clone https://github.com/StefanSchippers/xschem.git xschem-src && \
+    cd xschem-src && \
+    git checkout ${XSCHEM_RELEASE}
+
+WORKDIR /opt/elements/tools/xschem-src/
+
+RUN ./configure --prefix=/opt/elements/tools/ && make && sudo make install && make clean
+
 # IHP Open PDK
 
-ARG IHP_PDK_VERSION=4c6508d03a3078b21c737d04fae5dccec9aa590f
+ARG IHP_PDK_VERSION=082805f51d3e59f23ef458c4120083c23f52f393
 
 WORKDIR /opt/elements/pdks
 
 RUN git clone --progress https://github.com/IHP-GmbH/IHP-Open-PDK.git && \
     cd IHP-Open-PDK && \
-    git checkout ${IHP_PDK_VERSION}
+    git checkout ${IHP_PDK_VERSION} && \
+    pip3 install -r requirements.txt
 
 WORKDIR /opt/elements/
