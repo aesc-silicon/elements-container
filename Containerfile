@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="Europe/Berlin"
 
@@ -22,19 +22,19 @@ RUN apt-get update && apt-get install -y \
     libfl-dev \
     cmake \
     libftdi1-dev \
-    python3.10 \
-    python3.10-dev \
+    python3.12 \
+    python3.12-dev \
     python3-pip \
     python3-psutil \
-    libpython3.10 \
+    libpython3.12 \
     virtualenv \
     openjdk-11-jdk-headless \
     verilator \
     gtkwave \
     libcanberra-gtk-module \
     libcanberra-gtk3-module \
-    libtinfo5 \
-    libncurses5 \
+    libtinfo6 \
+    libncurses6 \
     ngspice \
     libx11-dev \
     libxrender-dev \
@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y \
 RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get update
 
-RUN pip install pyyaml
+RUN pip install pyyaml --break-system-packages
 
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
@@ -77,8 +77,8 @@ RUN wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHY
 # OSS Cad Suite
 
 ARG OSS_CAD_SUITE_YEAR=2025
-ARG OSS_CAD_SUITE_MONTH=06
-ARG OSS_CAD_SUITE_DAY=17
+ARG OSS_CAD_SUITE_MONTH=10
+ARG OSS_CAD_SUITE_DAY=08
 ARG OSS_CAD_SUITE_DATE="${OSS_CAD_SUITE_YEAR}-${OSS_CAD_SUITE_MONTH}-${OSS_CAD_SUITE_DAY}"
 ARG OSS_CAD_SUITE_STAMP="${OSS_CAD_SUITE_YEAR}${OSS_CAD_SUITE_MONTH}${OSS_CAD_SUITE_DAY}"
 
@@ -90,14 +90,14 @@ RUN wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_
 
 # KLayout, OpenROAD flow scripts, xschem
 
-ARG KLAYOUT_VERSION=0.29.12
+ARG KLAYOUT_VERSION=0.30.4
 ARG OPENROAD_FLOW_ORGA=The-OpenROAD-Project
-ARG OPENROAD_FLOW_COMMIT=7994405e8441ee3ca60cb107d1f26dd3e111a637
+ARG OPENROAD_FLOW_COMMIT=252042c9c294386a7a8594dc3465b542c0184c52
 ARG XSCHEM_RELEASE=3.4.6
 
 WORKDIR /opt/elements/
 
-RUN wget https://www.klayout.org/downloads/Ubuntu-22/klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
+RUN wget https://www.klayout.org/downloads/Ubuntu-24/klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
     sudo apt install -y ./klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
     rm klayout_${KLAYOUT_VERSION}-1_amd64.deb
 
@@ -125,15 +125,16 @@ WORKDIR /opt/elements/tools/xschem-src/
 
 RUN ./configure --prefix=/opt/elements/tools/ && make && sudo make install && make clean
 
-# IHP Open PDK
+# gdsfill
 
-ARG IHP_PDK_VERSION=082805f51d3e59f23ef458c4120083c23f52f393
+ARG GDSFILL_VERSION=0.1.3
 
-WORKDIR /opt/elements/pdks
+RUN pip install gdsfill==${GDSFILL_VERSION} --break-system-packages
 
-RUN git clone --progress https://github.com/IHP-GmbH/IHP-Open-PDK.git && \
-    cd IHP-Open-PDK && \
-    git checkout ${IHP_PDK_VERSION} && \
-    pip3 install -r requirements.txt
+# Install klayout as Python package for IHP's DRC tool
+
+ARG KLAYOUT_VERSION=0.30.4.post1
+
+RUN pip install klayout==${KLAYOUT_VERSION} --break-system-packages
 
 WORKDIR /opt/elements/
