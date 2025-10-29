@@ -6,8 +6,16 @@ Container with all requirements installed as environment for the Elements SDK.
 Build
 #####
 
-Run following code to build the `elements:v1.3` container with podman.
+Run following code to build the `elements:v2.0` container with podman.
 
 .. code-block:: bash
 
-    podman build -t dnltz/elements:v1.3 .
+    podman build -t dnltz/elements:v2.0 .
+
+Upload
+######
+
+.. code-block:: bash
+
+    podman login
+    podman push dnltz/elements:v2.0
