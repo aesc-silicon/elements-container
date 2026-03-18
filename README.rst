@@ -6,11 +6,17 @@ Container with all requirements installed as environment for the Elements SDK.
 Build
 #####
 
-Run following code to build the `elements:v2.1` container with podman.
+Run following code to build the `elements:v2.2` container with podman.
 
 .. code-block:: bash
 
-    podman build -t dnltz/elements:v2.1 .
+    podman build -t dnltz/elements:v2.2 .
+
+Alternatively, build a container with the latest version of OpenROAD Flow Scripts.
+
+.. code-block:: bash
+
+    podman build -t dnltz/elements:latest --build-arg OPENROAD_FLOW_COMMIT=master .
 
 Upload
 ######
@@ -18,4 +24,4 @@ Upload
 .. code-block:: bash
 
     podman login
-    podman push dnltz/elements:v2.1
+    podman push dnltz/elements:v2.2
