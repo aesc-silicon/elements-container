@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcanberra-gtk-module \
     libcanberra-gtk3-module \
     libtinfo6 \
+    libtbb-dev \
     libncurses6 \
     ngspice \
     libx11-dev \
@@ -47,6 +48,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tk8.6-dev \
     libxpm-dev \
     libjpeg-dev \
+    apt-transport-https \
+    coreutils \
+    python3 \
+    clang \
+    libboost-dev \
+    capnproto \
+    libcapnp-dev \
+    libgtest-dev \
+    libspdlog-dev \
+    libfmt-dev \
+    libboost-iostreams-dev \
+    zlib1g-dev \
     && add-apt-repository ppa:deadsnakes/ppa \
     && apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -71,6 +84,20 @@ RUN wget -q https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZE
     tar xJf toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz && \
     rm toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz
 
+# OpenROAD xschem
+ARG XSCHEM_RELEASE=3.4.6
+
+WORKDIR /opt/elements/tools/
+
+# Build xschem and cleanup source
+RUN git clone --depth 1 --branch ${XSCHEM_RELEASE} https://github.com/StefanSchippers/xschem.git xschem-src && \
+    cd xschem-src && \
+    ./configure --prefix=/opt/elements/tools/ && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf xschem-src
+
 # OSS Cad Suite
 ARG OSS_CAD_SUITE_YEAR=2026
 ARG OSS_CAD_SUITE_MONTH=01
@@ -86,8 +113,7 @@ RUN wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${O
 
 # OpenROAD flow scripts, xschem
 ARG OPENROAD_FLOW_ORGA=The-OpenROAD-Project
-ARG OPENROAD_FLOW_COMMIT=cc3eba7744b76ebe4c864d20a735e07bd7d357c6
-ARG XSCHEM_RELEASE=3.4.6
+ARG OPENROAD_FLOW_COMMIT=ba572973565f6e04da41192bf147ff3799377a85
 
 WORKDIR /opt/elements/tools
 
@@ -106,17 +132,6 @@ RUN ./tools/OpenROAD/etc/DependencyInstaller.sh -all && \
     rm -rf ./tools/OpenROAD ./tools/yosys .git /tmp/* /var/tmp/* && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/elements/tools/
-
-# Build xschem and cleanup source
-RUN git clone --depth 1 --branch ${XSCHEM_RELEASE} https://github.com/StefanSchippers/xschem.git xschem-src && \
-    cd xschem-src && \
-    ./configure --prefix=/opt/elements/tools/ && \
-    make && \
-    make install && \
-    cd .. && \
-    rm -rf xschem-src
-
 # Final stage - copy only what's needed
 FROM ubuntu:24.04
 
@@ -130,18 +145,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     time \
     make \
+    g++ \
+    binutils \
     python3.12 \
     python3.12-dev \
     python3-pip \
     python3-psutil \
     libpython3.12 \
     python3-click \
-    openjdk-11-jre-headless \
+    openjdk-11-jdk-headless \
     verilator \
     gtkwave \
     libcanberra-gtk-module \
     libcanberra-gtk3-module \
     libtinfo6 \
+    libtbb-dev \
     libncurses6 \
     ngspice \
     libx11-6 \
@@ -158,6 +176,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libqt5widgets5 \
     libqt5charts5 \
     libqt5printsupport5 \
+    libopengl0 \
     libxpm4 \
     libjpeg-turbo8 \
     libssl3 \
@@ -170,6 +189,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     libpcre2-8-0 \
     libreadline8 \
+    libcapnp-dev \
+    libspdlog-dev \
+    libfmt-dev \
     zlib1g \
     unzip \
     tzdata \
@@ -191,7 +213,7 @@ RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/ap
 WORKDIR /opt/elements/
 
 # Install KLayout
-ARG KLAYOUT_VERSION=0.30.4
+ARG KLAYOUT_VERSION=0.30.6
 
 RUN wget -q https://www.klayout.org/downloads/Ubuntu-24/klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
     apt-get update && apt-get install -y --no-install-recommends ./klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
@@ -199,8 +221,8 @@ RUN wget -q https://www.klayout.org/downloads/Ubuntu-24/klayout_${KLAYOUT_VERSIO
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install Python packages
-ARG GDSFILL_VERSION=0.1.3
-ARG KLAYOUT_PY_VERSION=0.30.4.post1
+ARG GDSFILL_VERSION=0.1.5
+ARG KLAYOUT_PY_VERSION=0.30.6
 
 RUN pip install --no-cache-dir \
     gdsfill==${GDSFILL_VERSION} \
