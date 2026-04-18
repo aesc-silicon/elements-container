@@ -117,7 +117,7 @@ RUN wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${O
 
 # OpenROAD flow scripts, xschem
 ARG OPENROAD_FLOW_ORGA=The-OpenROAD-Project
-ARG OPENROAD_FLOW_COMMIT=ba572973565f6e04da41192bf147ff3799377a85
+ARG OPENROAD_FLOW_COMMIT=8ecb57a0a7f5278d4ebbabf02851e5cd1eea7ecb
 
 WORKDIR /opt/elements/tools
 
