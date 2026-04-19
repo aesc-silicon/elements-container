@@ -169,7 +169,7 @@ RUN git clone --depth 1 --recurse-submodules --branch v${YOSYS_VERSION} https://
     rm -rf yosys
 
 # Magic VLSI layout tool for LibreLane
-ARG MAGIC_VERSION=8.3.498
+ARG MAGIC_VERSION=8.3.617
 
 RUN git clone --depth 1 --branch ${MAGIC_VERSION} https://github.com/RTimothyEdwards/magic.git magic-src && \
     cd magic-src && \
@@ -235,6 +235,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libbz2-1.0 \
     libffi8 \
     libgomp1 \
+    libglu1-mesa \
     libpcre2-8-0 \
     libreadline8 \
     libcapnp-dev \
@@ -252,6 +253,7 @@ COPY --from=builder /opt/or-tools /opt/or-tools
 COPY --from=builder /usr/local/lib/python3.12/dist-packages /usr/local/lib/python3.12/dist-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /usr/local/share /usr/local/share
+COPY --from=builder /usr/local/lib /usr/local/lib
 
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list && \
     echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list && \
