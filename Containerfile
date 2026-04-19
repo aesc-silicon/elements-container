@@ -179,6 +179,16 @@ RUN git clone --depth 1 --branch ${MAGIC_VERSION} https://github.com/RTimothyEdw
     cd .. && \
     rm -rf magic-src
 
+WORKDIR /opt/elements/tools/bin
+
+ARG OPENVAF_VERSION=23_5_0
+
+RUN wget -q https://openva.fra1.cdn.digitaloceanspaces.com/openvaf_${OPENVAF_VERSION}_linux_amd64.tar.gz && \
+    tar xf openvaf_${OPENVAF_VERSION}_linux_amd64.tar.gz && \
+    rm openvaf_${OPENVAF_VERSION}_linux_amd64.tar.gz
+
+WORKDIR /opt/elements/tools/
+
 # Final stage - copy only what's needed
 FROM ubuntu:24.04
 
