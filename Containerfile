@@ -243,6 +243,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g \
     unzip \
     tzdata \
+    xterm \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy built artifacts from builder stage
