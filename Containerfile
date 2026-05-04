@@ -72,7 +72,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir pyyaml uv "pybind11>=3.0.0" cxxheaderparser click setuptools wheel --break-system-packages
 
 # Zephyr SDK - download, extract, and cleanup in single layer
-ARG ZEPHYR_SDK_RELEASE=0.17.0
+ARG ZEPHYR_SDK_RELEASE=1.0.1
 
 WORKDIR /opt/elements/
 
@@ -83,10 +83,11 @@ RUN wget -q https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZE
 
 WORKDIR /opt/elements/zephyr-sdk-${ZEPHYR_SDK_RELEASE}
 
-RUN wget -q https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz && \
+RUN mkdir -p gnu && \
+    wget -q https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/toolchain_gnu_linux-x86_64_riscv64-zephyr-elf.tar.xz && \
     wget -q -O - https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_RELEASE}/sha256.sum | shasum --check --ignore-missing && \
-    tar xJf toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz && \
-    rm toolchain_linux-x86_64_riscv64-zephyr-elf.tar.xz
+    tar xJf toolchain_gnu_linux-x86_64_riscv64-zephyr-elf.tar.xz -C gnu && \
+    rm toolchain_gnu_linux-x86_64_riscv64-zephyr-elf.tar.xz
 
 # OpenROAD xschem
 ARG XSCHEM_RELEASE=3.4.6
@@ -220,6 +221,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libtbb-dev \
     libncurses6 \
     ngspice \
+    ninja-build \
     libx11-6 \
     libxrender1 \
     libx11-xcb1 \
@@ -298,6 +300,7 @@ RUN pip install --no-cache-dir \
     pytest==${PYTEST_VERSION} \
     ciel==${CIEL_VERSION} \
     librelane==${LIBRELANE_VERSION} \
+    west \
     docopt \
     --break-system-packages
 
