@@ -284,6 +284,14 @@ RUN wget -q https://www.klayout.org/downloads/Ubuntu-24/klayout_${KLAYOUT_VERSIO
     rm klayout_${KLAYOUT_VERSION}-1_amd64.deb && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Install Renode
+ARG RENODE_VERSION=1.16.1
+
+RUN wget -q https://github.com/renode/renode/releases/download/v${RENODE_VERSION}/renode_${RENODE_VERSION}_amd64.deb && \
+    apt-get update && apt-get install -y ./renode_${RENODE_VERSION}_amd64.deb && \
+    rm renode_${RENODE_VERSION}_amd64.deb && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Install Python packages
 ARG GDSFILL_VERSION=0.1.5
 ARG KLAYOUT_PY_VERSION=0.30.6
