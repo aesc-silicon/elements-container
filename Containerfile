@@ -230,6 +230,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openjdk-11-jdk-headless \
     verilator \
     gtkwave \
+    flashrom \
     libcanberra-gtk-module \
     libcanberra-gtk3-module \
     libtinfo6 \
@@ -273,7 +274,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     tzdata \
     xterm \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && ln -s /usr/sbin/flashrom /usr/local/bin/flashrom
 
 # Copy built artifacts from builder stage
 COPY --from=builder /opt/elements /opt/elements
