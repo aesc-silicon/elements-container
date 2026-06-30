@@ -293,7 +293,6 @@ RUN wget -q https://github.com/renode/renode/releases/download/v${RENODE_VERSION
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install Python packages
-ARG GDSFILL_VERSION=0.1.5
 ARG KLAYOUT_PY_VERSION=0.30.6
 ARG COCOTB_VERSION=2.0.1
 ARG PYTEST_VERSION=9.0.2
@@ -302,7 +301,6 @@ ARG LIBRELANE_VERSION=3.0.2
 
 RUN pip install --no-cache-dir \
     uv \
-    gdsfill==${GDSFILL_VERSION} \
     klayout==${KLAYOUT_PY_VERSION} \
     cocotb==${COCOTB_VERSION} \
     pytest==${PYTEST_VERSION} \
@@ -311,5 +309,18 @@ RUN pip install --no-cache-dir \
     west \
     docopt \
     --break-system-packages
+
+# Install EDA packages via Cargo (Rust).
+# Append more tools to CARGO_PACKAGES using the "<crate>@<version>" syntax,
+# e.g. "gdsfill@0.1.8 othertool@1.2.3".
+ARG CARGO_PACKAGES="gdsfill@0.1.8"
+
+RUN export RUSTUP_HOME=/tmp/rustup && \
+    export CARGO_HOME=/tmp/cargo && \
+    export PATH="$CARGO_HOME/bin:$PATH" && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+        sh -s -- -y --default-toolchain stable --profile minimal --no-modify-path && \
+    cargo install ${CARGO_PACKAGES} --root /usr/local && \
+    rm -rf "$RUSTUP_HOME" "$CARGO_HOME"
 
 WORKDIR /opt/elements/
