@@ -28,6 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     swig \
     cmake \
     libftdi1-dev \
+    libusb-1.0-0-dev \
+    texinfo \
     python3.12 \
     python3.12-dev \
     python3-pip \
@@ -190,6 +192,19 @@ RUN wget -q https://openva.fra1.cdn.digitaloceanspaces.com/openvaf_${OPENVAF_VER
 
 WORKDIR /opt/elements/tools/
 
+# OpenOCD - aesc fork with SPI flash controller support
+ARG OPENOCD_REPO=https://github.com/aesc-silicon/elements-openocd.git
+ARG OPENOCD_BRANCH=WIP/dnltz/SPI-flash-controller
+
+RUN git clone --recursive --branch ${OPENOCD_BRANCH} ${OPENOCD_REPO} openocd-src && \
+    cd openocd-src && \
+    ./bootstrap && \
+    ./configure --prefix=/usr/local --enable-internal-jimtcl && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf openocd-src
+
 # Final stage - copy only what's needed
 FROM ubuntu:24.04
 
@@ -243,6 +258,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libyaml-0-2 \
     libyaml-cpp0.8 \
     libftdi1-2 \
+    libusb-1.0-0 \
     libfl2 \
     libbz2-1.0 \
     libffi8 \
