@@ -326,6 +326,12 @@ RUN pip install --no-cache-dir \
     librelane==${LIBRELANE_VERSION} \
     west \
     docopt \
+    jsonschema \
+    pyelftools \
+    pykwalify \
+    packaging \
+    intelhex \
+    pyserial \
     --break-system-packages
 
 # Install EDA packages via Cargo (Rust).
