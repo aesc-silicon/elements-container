@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-psutil \
     libpython3.12 \
     virtualenv \
-    openjdk-11-jdk-headless \
+    openjdk-17-jdk-headless \
     libcanberra-gtk-module \
     libcanberra-gtk3-module \
     libtinfo6 \
@@ -227,7 +227,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-tk \
     python3-click \
     libpython3.12 \
-    openjdk-11-jdk-headless \
+    openjdk-17-jdk-headless \
     verilator \
     gtkwave \
     flashrom \
